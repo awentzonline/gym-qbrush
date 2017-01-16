@@ -23,12 +23,11 @@ logger = logging.getLogger(__name__)
 class QBrushEnv(gym.Env):
     metadata = {'render.modes': ['human', 'rgb_array']}
     action_names = ['up', 'right', 'down', 'left', 'stop']
-    move_size = 0.05
 
     def __init__(
             self, canvas_size=(64, 64), canvas_channels=3, color='white',
             background_color='black', position_map_decay=0.5,
-            feature_layers=['block4_conv1'], move_size=0.025):
+            feature_layers=['block4_conv1'], move_size=0.05):
         super(QBrushEnv, self).__init__()
         self.viewer = None
         self.image_dataset = None
@@ -65,12 +64,12 @@ class QBrushEnv(gym.Env):
             return
 
         if mode == 'rgb_array':
-            return self.rgb_canvas
+            return self.rgb_canvas.astype(np.uint8)
         elif mode == 'human':
             from gym.envs.classic_control import rendering
             if self.viewer is None:
                 self.viewer = rendering.SimpleImageViewer()
-            self.viewer.imshow(self.rgb_canvas)
+            self.viewer.imshow(self.rgb_canvas.astype(np.uint8))
 
     def _step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
