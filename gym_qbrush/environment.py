@@ -40,7 +40,7 @@ class QBrushEnv(gym.Env):
         self.move_size = move_size
         self.action_space = spaces.Discrete(len(self.action_names))
         self.observation_space = spaces.Box(
-            low=0, high=255, shape=self.canvas_shape)
+            low=0, high=255, shape=self.observation_shape)
         self._prepare_vgg()
 
     def set_image_source(self, glob, preprocessors=[]):
@@ -130,7 +130,7 @@ class QBrushEnv(gym.Env):
         else:
             axis = 1
         pmap = np.expand_dims(self.position_map, axis)
-        return np.concatenate([self.canvas_arr, pmap], axis=axis)
+        return np.concatenate([self.canvas_arr, self.target_arr, pmap * 255.], axis=axis)
 
     def _update_canvas_array(self):
         self.canvas_arr = img_to_array(self.canvas)
@@ -185,6 +185,17 @@ class QBrushEnv(gym.Env):
     @property
     def rgb_canvas(self):
         return rgb_array(self.canvas_arr[None, ...])[0]
+
+    @property
+    def observation_shape(self):
+        obs_shape = list(self.canvas_shape)
+        if K.image_dim_ordering() == 'tf':
+            axis = -1
+        else:
+            axis = 1
+        obs_shape[axis] *= 2  # target image channels
+        obs_shape[axis] += 1  # position map
+        return obs_shape
 
 
 def mse(a, b):

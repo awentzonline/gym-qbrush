@@ -26,9 +26,7 @@ class QBrushAdvantageAgent(QAgent):
     def build_model(self):
         obs_space = self.environment.observation_space
         print 'obs', self.environment.observation_space.low.shape
-        input_shape = list(self.environment.observation_space.low.shape)
-        input_shape[-1] += 1  # add dimension for position map
-        x = input = Input(shape=input_shape)
+        x = input = Input(shape=obs_space.low.shape)
         #x = MaxPooling2D((3,3))(x)
         x = Convolution2D(32, 8, 8, subsample=(4, 4))(x)
         x = LeakyReLU()(x)
