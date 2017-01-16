@@ -128,7 +128,7 @@ def main(config, api_key):
 
 
 if __name__ == '__main__':
-    arg_parser = argparse.ArgumentParser('cart/pole solver')
+    arg_parser = argparse.ArgumentParser('qbrush solver')
     arg_parser.add_argument('--discount', type=float, default=0.99)
     arg_parser.add_argument('--episodes', type=int, default=5)
     arg_parser.add_argument('--epsilon', type=float, default=1.0)
