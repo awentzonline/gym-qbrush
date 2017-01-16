@@ -42,6 +42,7 @@ class QBrushEnv(gym.Env):
         self.observation_space = spaces.Box(
             low=0, high=255, shape=self.observation_shape)
         self._prepare_vgg()
+        self._update_baseline_image()
 
     def set_image_source(self, glob, preprocessors=[]):
         preprocessors.append(image_preprocessors.resize(self.canvas_size))
@@ -86,15 +87,9 @@ class QBrushEnv(gym.Env):
             #print self.canvas_arr.min(), self.canvas_arr.mean(), self.canvas_arr.max()
         if done:
             # calculate reward relative to quality of a random image
-            random_canvas = np.random.uniform(0., 255., self.canvas_shape)
-            features = self.get_image_features(
-                np.stack([random_canvas, self.canvas_arr, self.target_arr]))
-            random_features = features[0]
-            canvas_features = features[1]
-            target_features = features[2]
-            canvas_err = mse(canvas_features, target_features)
-            random_err = mse(random_features, target_features)
-            err_ratio = random_err / canvas_err
+            canvas_features = self.get_image_features(self.canvas_arr[None, ...])[0]
+            canvas_err = mse(canvas_features, self.target_features)
+            err_ratio = self.baseline_error / canvas_err
             reward = (err_ratio - 1.) * 10 # TODO: improve this
         else:
             reward = -0.1
@@ -145,6 +140,12 @@ class QBrushEnv(gym.Env):
     def update_target(self, target_image):
         self.target_image = target_image
         self.target_arr = img_to_array(self.target_image)
+        self.target_features = self.get_image_features(self.target_arr[None, ...])[0]
+        self.baseline_error = mse(self.baseline_features, self.target_features)
+
+    def _update_baseline_image(self):
+        self.baseline_canvas = np.random.uniform(0., 255., self.canvas_shape)
+        self.baseline_features = self.get_image_features(self.baseline_canvas[None, ...])
 
     def _prepare_vgg(self):
         vgg = vgg16.VGG16(include_top=False, input_shape=self.vgg_shape)
