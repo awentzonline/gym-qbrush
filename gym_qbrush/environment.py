@@ -54,6 +54,7 @@ class QBrushEnv(gym.Env):
         self._update_canvas_array()
         self.position = np.random.uniform(0., 1., (2,))
         self.position_map = np.zeros(self.canvas_shape_size)
+        self._update_position_map()
         return np.array(self.canvas_arr)
 
     def _render(self, mode='human', close=False):

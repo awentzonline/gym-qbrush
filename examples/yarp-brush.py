@@ -27,7 +27,6 @@ class QBrushAdvantageAgent(QAgent):
         obs_space = self.environment.observation_space
         print 'obs', self.environment.observation_space.low.shape
         x = input = Input(shape=obs_space.low.shape)
-        #x = MaxPooling2D((3,3))(x)
         x = Convolution2D(32, 8, 8, subsample=(4, 4))(x)
         x = LeakyReLU()(x)
         x = Convolution2D(64, 4, 4, subsample=(2, 2))(x)
