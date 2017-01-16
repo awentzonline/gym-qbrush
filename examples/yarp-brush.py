@@ -25,7 +25,6 @@ from gym_qbrush import image_preprocessors
 class QBrushAdvantageAgent(QAgent):
     def build_model(self):
         obs_space = self.environment.observation_space
-        print 'obs', self.environment.observation_space.low.shape
         x = input = Input(shape=obs_space.low.shape)
         x = Convolution2D(32, 8, 8, subsample=(4, 4))(x)
         x = LeakyReLU()(x)
@@ -111,14 +110,11 @@ def main(config, api_key):
                 max_steps=config.sim_steps, max_episodes=config.sim_episodes
             )
             recent_episode_rewards += episode_rewards
-            #needs_training = np.mean(episode_rewards) < 195.
             print_stats('Loss', losses)
             print_stats('All rewards', rewards)
             print_stats('Episode rewards', episode_rewards)
             if (epoch_i + 1) % config.save_rate == 0:
                 agent.save_model()
-            if len(recent_episode_rewards) == 100 and np.mean(recent_episode_rewards) >= 195. and np.min(recent_episode_rewards) >= 195.:
-                break
     except KeyboardInterrupt:
         pass
     #environment.monitor.close()
