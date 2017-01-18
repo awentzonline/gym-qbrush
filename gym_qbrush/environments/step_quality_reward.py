@@ -37,3 +37,7 @@ class StepQualityRewardEnv(QBrushEnv):
             else:
                 reward = -1.
         return reward
+
+    def _update_baseline_image(self):
+        self.baseline_canvas = img_to_array(self.blank_canvas())
+        self.baseline_features = self.get_image_features(self.baseline_canvas[None, ...])

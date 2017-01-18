@@ -51,8 +51,7 @@ class QBrushEnv(gym.Env):
 
     def _reset(self):
         self.update_target(self.image_dataset.get_batch(1)[0])
-        self.canvas = Image.new(
-            self.canvas_mode, self.canvas_size, self.background_color)
+        self.canvas = self.blank_canvas()
         self._update_canvas_array()
         self.position = np.random.uniform(0., 1., (2,))
         self.position_map = np.zeros(self.canvas_shape_size)
@@ -119,6 +118,10 @@ class QBrushEnv(gym.Env):
             axis = 1
         pmap = np.expand_dims(self.position_map, axis)
         return np.concatenate([self.canvas_arr, self.target_arr, pmap * 255.], axis=axis)
+
+    def blank_canvas(self):
+        return Image.new(
+            self.canvas_mode, self.canvas_size, self.background_color)
 
     def _update_canvas_array(self):
         self.canvas_arr = img_to_array(self.canvas)
