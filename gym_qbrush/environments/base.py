@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw
 
 from gym_qbrush import image_preprocessors
 from gym_qbrush.image_dataset import ImageDataset
+from gym_qbrush.np_objectives import mse
 
 
 logger = logging.getLogger(__name__)
@@ -64,7 +65,6 @@ class QBrushEnv(gym.Env):
                 self.viewer.close()
                 self.viewer = None
             return
-
         if mode == 'rgb_array':
             return self.rgb_canvas.astype(np.uint8)
         elif mode == 'human':
@@ -85,15 +85,7 @@ class QBrushEnv(gym.Env):
             getattr(self, 'perform_move_{}'.format(action_name))()
             self._update_canvas_array()
             #print self.canvas_arr.min(), self.canvas_arr.mean(), self.canvas_arr.max()
-        if done:
-            # calculate reward relative to quality of a random image
-            canvas_features = self.get_image_features(self.canvas_arr[None, ...])[0]
-            canvas_err = mse(canvas_features, self.target_features)
-            err_ratio = self.baseline_error / canvas_err
-            reward = (err_ratio - 1.) * 10 # TODO: improve this
-        else:
-            reward = -0.1
-        return self.get_state(), reward, done, {}
+        return self.get_state(), self.calculate_reward(done), done, {}
 
     def perform_move_up(self):
         self._perform_move(0., -self.move_size)
@@ -198,10 +190,6 @@ class QBrushEnv(gym.Env):
         obs_shape[axis] *= 2  # target image channels
         obs_shape[axis] += 1  # position map
         return obs_shape
-
-
-def mse(a, b):
-    return np.square(a - b).sum()
 
 
 def rgb_array(image_arr):

@@ -143,7 +143,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('--agent', default='duel')
     arg_parser.add_argument('--lr', type=float, default=0.0000625)
     arg_parser.add_argument('--monitor-path', default='monitor-data')
-    arg_parser.add_argument('--env', default='awentzonline/QBrush-v0')
+    arg_parser.add_argument('--env', default='awentzonline/QBrush-Step-v0')
     arg_parser.add_argument('--target-update', type=float, default=1e-3)
     arg_parser.add_argument('images_glob')
 
