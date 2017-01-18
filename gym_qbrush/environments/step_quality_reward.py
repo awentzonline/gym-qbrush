@@ -32,8 +32,8 @@ class StepQualityRewardEnv(QBrushEnv):
             canvas_features = self.get_image_features(self.canvas_arr[None, ...])[0]
             canvas_err = mse(canvas_features, self.target_features)
             if canvas_err < self.best_canvas_err:
+                reward = 10. * self.best_canvas_err / canvas_err
                 self.best_canvas_err = canvas_err
-                reward = 1.
             else:
                 reward = -1.
         return reward
