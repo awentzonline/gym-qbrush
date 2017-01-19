@@ -130,5 +130,5 @@ for i in range(n):
 
 # save the result to disk
 imsave('output/canvas_filters_%dx%d.png' % (n, n), stitched_filters[..., 0])
-imsave('output/target_filters_%dx%d.png' % (n, n), stitched_filters[..., 0])
-imsave('output/position_filters_%dx%d.png' % (n, n), stitched_filters[..., 0])
+imsave('output/target_filters_%dx%d.png' % (n, n), stitched_filters[..., 1])
+imsave('output/position_filters_%dx%d.png' % (n, n), stitched_filters[..., 2])
