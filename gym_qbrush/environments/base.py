@@ -114,9 +114,10 @@ class QBrushEnv(gym.Env):
     def get_state(self):
         if K.image_dim_ordering() == 'tf':
             axis = -1
+            pmap = self.position_map[..., None]
         else:
             axis = 1
-        pmap = np.expand_dims(self.position_map, axis)
+            pmap = self.position_map[None, ...]
         return np.concatenate([self.canvas_arr, self.target_arr, pmap * 255.], axis=axis)
 
     def blank_canvas(self):

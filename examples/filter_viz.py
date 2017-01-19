@@ -52,7 +52,7 @@ def normalize(x):
 
 
 kept_filters = []
-for filter_index in range(0, 10):
+for filter_index in range(0, 32):
     print('Processing filter %d' % filter_index)
     start_time = time.time()
 
