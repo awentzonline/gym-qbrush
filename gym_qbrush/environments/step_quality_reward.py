@@ -27,7 +27,7 @@ class StepQualityRewardEnv(QBrushEnv):
 
     def calculate_reward(self, done):
         if done:
-            return -1.
+            return -100.
         else:
             canvas_features = self.get_image_features(self.canvas_arr[None, ...])[0]
             canvas_err = mse(canvas_features, self.target_features)
@@ -37,7 +37,3 @@ class StepQualityRewardEnv(QBrushEnv):
             else:
                 reward = -1.
         return reward
-
-    def _update_baseline_image(self):
-        self.baseline_canvas = img_to_array(self.blank_canvas())
-        self.baseline_features = self.get_image_features(self.baseline_canvas[None, ...])
