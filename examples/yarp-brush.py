@@ -8,7 +8,7 @@ import numpy as np
 from keras import backend as K
 from keras.layers import (
     Activation, Convolution2D, Dense, Dropout, Flatten, GlobalAveragePooling2D,
-    Input, LeakyReLU, MaxPooling2D, merge, RepeatVector
+    Input, Layer, LeakyReLU, MaxPooling2D, merge, RepeatVector
 )
 from keras.models import Model, Sequential
 from keras.optimizers import Adam, RMSprop
@@ -20,18 +20,29 @@ from yarp.policy import AnnealedGreedyQPolicy, EpsilonGreedyQPolicy
 
 import gym_qbrush
 from gym_qbrush import image_preprocessors
+from gym_qbrush.layers import ChannelFilter
 
 
 class QBrushAdvantageAgent(QAgent):
     def build_model(self):
         obs_space = self.environment.observation_space
-        x = input = Input(shape=obs_space.low.shape)
-        x = Convolution2D(32, 8, 8, subsample=(4, 4), name='conv0')(x)
-        x = LeakyReLU(name='conv0_act')(x)
-        x = Convolution2D(64, 4, 4, subsample=(2, 2), name='conv1')(x)
-        x = LeakyReLU(name='conv1_act')(x)
-        x = Convolution2D(64, 2, 2, subsample=(1, 1), name='conv2')(x)
-        x = LeakyReLU(name='conv2_act')(x)
+        input = Input(shape=self.environment.observation_space.shape)
+        canvas_x = ChannelFilter((0, 1))(input)
+        canvas_x = Convolution2D(32, 8, 8, subsample=(4, 4), name='canvas_conv0')(canvas_x)
+        canvas_x = LeakyReLU(name='canvas_conv0_act')(canvas_x)
+        canvas_x = Convolution2D(64, 4, 4, subsample=(2, 2), name='canvas_conv1')(canvas_x)
+        canvas_x = LeakyReLU(name='canvas_conv1_act')(canvas_x)
+        canvas_x = Convolution2D(64, 2, 2, subsample=(1, 1), name='canvas_conv2')(canvas_x)
+        canvas_x = LeakyReLU(name='conv2_act')(canvas_x)
+
+        pos_x = ChannelFilter((2,))(input)
+        pos_x = Convolution2D(32, 8, 8, subsample=(4, 4), name='pos_conv0')(pos_x)
+        pos_x = LeakyReLU(name='pos_conv0_act')(pos_x)
+        pos_x = Convolution2D(64, 4, 4, subsample=(2, 2), name='pos_conv1')(pos_x)
+        pos_x = LeakyReLU(name='pos_conv1_act')(pos_x)
+        pos_x = Convolution2D(64, 2, 2, subsample=(1, 1), name='pos_conv2')(pos_x)
+        pos_x = LeakyReLU(name='pos_conv2_act')(pos_x)
+        x = merge([canvas_x, pos_x], mode='sum')
         x = Flatten()(x)
         v_hat = Dense(self.config.num_hidden)(x)
         v_hat = LeakyReLU()(v_hat)
@@ -47,7 +58,8 @@ class QBrushAdvantageAgent(QAgent):
 
     def model_custom_objects(self, **kwargs):
         return super(QBrushAdvantageAgent, self).model_custom_objects(
-            AdvantageAggregator=AdvantageAggregator, **kwargs)
+            AdvantageAggregator=AdvantageAggregator,
+            ChannelFilter=ChannelFilter, **kwargs)
 
 
 AGENT_REGISTRY = dict(

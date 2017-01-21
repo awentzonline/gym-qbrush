@@ -15,6 +15,7 @@ from keras.models import load_model
 from scipy.misc import imsave
 
 from yarp.advantage import AdvantageAggregator
+from gym_qbrush.layers import ChannelFilter
 
 
 # dimensions of the generated pictures for each filter.
@@ -36,7 +37,9 @@ def deprocess_image(x):
 # build the network
 print('Loading model...')
 model = load_model(
-    sys.argv[1], custom_objects=dict(AdvantageAggregator=AdvantageAggregator))
+    sys.argv[1], custom_objects=dict(
+        AdvantageAggregator=AdvantageAggregator,
+        ChannelFilter=ChannelFilter))
 model.summary()
 
 # this is the placeholder for the input images
