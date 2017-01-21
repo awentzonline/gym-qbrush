@@ -23,7 +23,7 @@ img_width = 64
 img_height = 64
 
 # the name of the layer we want to visualize
-layer_name = 'leakyrelu_1'
+layer_name = 'canvas_conv2_act'
 
 # util function to convert a tensor into a valid image
 

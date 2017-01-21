@@ -33,7 +33,7 @@ class QBrushAdvantageAgent(QAgent):
         canvas_x = Convolution2D(64, 4, 4, subsample=(2, 2), name='canvas_conv1')(canvas_x)
         canvas_x = LeakyReLU(name='canvas_conv1_act')(canvas_x)
         canvas_x = Convolution2D(64, 2, 2, subsample=(1, 1), name='canvas_conv2')(canvas_x)
-        canvas_x = LeakyReLU(name='conv2_act')(canvas_x)
+        canvas_x = LeakyReLU(name='canvas_conv2_act')(canvas_x)
 
         pos_x = ChannelFilter((2,))(input)
         pos_x = Convolution2D(32, 8, 8, subsample=(4, 4), name='pos_conv0')(pos_x)
