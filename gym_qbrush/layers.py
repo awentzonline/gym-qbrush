@@ -18,3 +18,8 @@ class ChannelFilter(Layer):
             return input_shape[:-1] + (len(self.channels),)
         else:
             return (input_shape[0], len(self.channels)) + input_shape[2:]
+
+    def get_config(self):
+        config = dict(channels=channels)
+        base_config = super(ChannelFilter, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
