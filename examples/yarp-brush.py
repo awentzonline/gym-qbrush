@@ -25,7 +25,7 @@ from gym_qbrush import image_preprocessors
 class QBrushAdvantageAgent(QAgent):
     def build_model(self):
         obs_space = self.environment.observation_space
-        x = input = Input(shape=obs_space.low.shape)
+        x = input = Input(shape=obs_space.shape)
         x = Convolution2D(32, 8, 8, subsample=(4, 4), name='conv0')(x)
         x = LeakyReLU(name='conv0_act')(x)
         x = Convolution2D(64, 4, 4, subsample=(2, 2), name='conv1')(x)
@@ -74,7 +74,7 @@ def main(config, api_key):
 
     print('creating agent')
     agent_class = AGENT_REGISTRY[config.agent]
-    memory = Memory(config.memory)
+    memory = Memory(environment.observation_space.shape, (1,), config.memory)
     agent = agent_class(
         config, environment, memory, name=config.model_name,
         ignore_existing=config.ignore_existing,
